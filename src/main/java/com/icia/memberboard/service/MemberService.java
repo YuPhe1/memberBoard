@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,15 @@ public class MemberService {
             memberDTO.setMemberProfile(storedFileName);
             MemberEntity memberEntity = MemberEntity.toSaveEntity(memberDTO);
             return memberRepository.save(memberEntity).getId();
+        }
+    }
+
+    public boolean emailCheck(String memberEmail) {
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
+        if(optionalMemberEntity.isEmpty()){
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -10,7 +10,7 @@
     <div class="row justify-content-center">
         <div class="col-10">
             <div class="card p-3">
-                <form action="/member/save" method="post" enctype="multipart/form-data">
+                <form action="/member/save" name="member" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-2 text-center">
                             <img src="https://via.placeholder.com/100x100" alt="" width="90%" id="profile-image">
@@ -19,9 +19,9 @@
                             <div class="input-group">
                                 <span class="input-group-text">이메일</span>
                                 <input type="text" name="memberEmail" class="form-control">
-                                <button type="button" class="btn btn-outline-secondary">중복체크</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="check_email()">중복체크</button>
                             </div>
-                            <div class="mb-3" id="check-email"></div>
+                            <div class="mb-3" id="check-email-area"></div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">비밀번호</span>
                                 <input type="password" name="memberPassword" class="form-control">
@@ -45,7 +45,7 @@
                     </div>
                     <div class="text-center">
                         <button class="btn btn-primary">회원가입</button>
-                        <button type="button" class="btn btn-secondary mx-2">취소</button>
+                        <button type="button" class="btn btn-secondary mx-2" onclick="cancel_fn()">취소</button>
                     </div>
                 </form>
             </div>
@@ -61,5 +61,55 @@
     document.getElementById("profile").addEventListener("change", (e) => {
         document.getElementById("profile-image").src = URL.createObjectURL(e.target.files[0]);
     })
+
+    let checkEmail = false;
+    const checkEmailArea = document.querySelector("#check-email-area");
+    const check_email = () => {
+        const email = document.member.memberEmail.value;
+        if (email == "") {
+            checkEmailArea.innerHTML = "이메일을 입력해 주세요.";
+            checkEmailArea.style.color = "red";
+        } else {
+            axios({
+                method: "post", // http request method(get, post, put, delete ...)
+                url: "/member/dup-check",
+                data: {
+                    memberEmail: email
+                }
+            }).then(res => {
+                // 요청성공 후 서버에서 200응답
+                console.log(res);
+                checkEmailArea.innerHTML = "사용가능한 이메일입니다.";
+                checkEmailArea.style.color = "green";
+                checkEmail = true;
+            }).catch(err => {
+                // 요청실패 또는 서버에서 4xx, 5xx응답
+                console.log(err);
+                checkEmailArea.innerHTML = "이미사용중인 이메일 입니다.";
+                checkEmailArea.style.color = "red";
+            });
+        }
+    }
+
+    document.member.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const password = document.member.memberPassword;
+        const name = document.member.memberName;
+        if (!checkEmail) {
+            alert("이메일 중복체크를 해주세요!");
+            document.member.memberEmail.focus();
+        } else if (password.value == "") {
+            alert("비밀번호를 입력해 주세요!");
+            password.focus();
+        } else if (name.value == "") {
+            alert("이름을 입력해주세요!");
+            name.focus();
+        } else {
+            document.member.submit();
+        }
+    })
+    const cancel_fn = () => {
+        location.href = "/";
+    }
 </script>
 </html>
