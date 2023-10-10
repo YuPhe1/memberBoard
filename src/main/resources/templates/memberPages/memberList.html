@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <table class="table">
+        <tr class="table-dark">
+            <th>회원번호</th>
+            <th>이메일</th>
+            <th>이름</th>
+            <th>생년월일</th>
+            <th>전화번호</th>
+            <th>가입일</th>
+            <th>삭제</th>
+        </tr>
+        <tr th:each="member: ${memberList}">
+            <td th:text="${member.id}"></td>
+            <td>
+                <a th:href="@{|/member/${member.id}|}" th:text="${member.memberEmail}"></a>
+            </td>
+            <td th:text="${member.memberName}"></td>
+            <td th:text="${member.memberBirth}"></td>
+            <td th:text="${member.memberMobile}"></td>
+            <td th:text="${member.createdAt}"></td>
+            <td>
+                <button class="btn btn-danger" th:onclick="delete_fn([[${member.id}]])">삭제</button>
+            </td>
+        </tr>
+    </table>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    const delete_fn = (id) => {
+        axios({
+            method: "delete",
+            url: `/member/${id}`
+        }).then(res => {
+            alert("삭제 성공");
+            location.href = "/member";
+        }). catch(err => {
+            alert("삭제 실패")
+        })
+    }
+</script>
+</html>

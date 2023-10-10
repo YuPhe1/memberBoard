@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -21,7 +22,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/save")
-    public String savePage(){
+    public String savePage() {
         return "memberPages/memberSave";
     }
 
@@ -34,26 +35,26 @@ public class MemberController {
     @PostMapping("/dup-check")
     public ResponseEntity dupCheck(@RequestBody MemberDTO memberDTO) {
         boolean result = memberService.emailCheck(memberDTO.getMemberEmail());
-        if(result) {
+        if (result) {
             return new ResponseEntity("사용가능", HttpStatus.OK);
-        }else {
+        } else {
             return new ResponseEntity("사용불가능", HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "redirectURI", defaultValue = "/member/myPage") String redirectURI,
-                            Model model){
+                            Model model) {
         model.addAttribute("redirectURI", redirectURI);
         return "memberPages/memberLogin";
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody MemberDTO memberDTO, HttpSession session){
+    public ResponseEntity login(@RequestBody MemberDTO memberDTO, HttpSession session) {
         try {
             MemberDTO dto = memberService.findByMemberEmail(memberDTO.getMemberEmail());
-            if(dto.getMemberEmail().equals(memberDTO.getMemberEmail())
-                    && dto.getMemberPassword().equals(memberDTO.getMemberPassword())){
+            if (dto.getMemberEmail().equals(memberDTO.getMemberEmail())
+                    && dto.getMemberPassword().equals(memberDTO.getMemberPassword())) {
                 session.setAttribute("loginEmail", dto.getMemberEmail());
                 session.setAttribute("loginId", dto.getId());
                 session.setAttribute("loginName", dto.getMemberName());
@@ -67,16 +68,33 @@ public class MemberController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session){
+    public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }
 
     @GetMapping("/myPage")
-    public String myPage(HttpSession session, Model model){
+    public String myPage(HttpSession session, Model model) {
         String loginEmail = (String) session.getAttribute("loginEmail");
         MemberDTO memberDTO = memberService.findByMemberEmail(loginEmail);
         model.addAttribute("member", memberDTO);
         return "memberPages/memberDetail";
+    }
+
+    @GetMapping("/{id}")
+    public String myPage(@PathVariable("id") Long id, Model model) {
+        try {
+            MemberDTO memberDTO = memberService.findById(id);
+            model.addAttribute("member", memberDTO);
+            return "memberPages/memberDetail";
+        } catch (NoSuchElementException e){
+            return "memberPages/memberNotFound";
+        }
+    }
+
+    @GetMapping()
+    public String list(Model model){
+        model.addAttribute("memberList", memberService.findAll());
+        return "memberPages/memberList";
     }
 }

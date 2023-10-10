@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -19,7 +21,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public Long save(MemberDTO memberDTO) throws IOException {
-        if(memberDTO.getProfile().isEmpty()){
+        if (memberDTO.getProfile().isEmpty()) {
             MemberEntity memberEntity = MemberEntity.toSaveEntity(memberDTO);
             return memberRepository.save(memberEntity).getId();
         } else {
@@ -36,7 +38,7 @@ public class MemberService {
 
     public boolean emailCheck(String memberEmail) {
         Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(memberEmail);
-        if(optionalMemberEntity.isEmpty()){
+        if (optionalMemberEntity.isEmpty()) {
             return true;
         } else {
             return false;
@@ -46,5 +48,19 @@ public class MemberService {
     public MemberDTO findByMemberEmail(String memberEmail) {
         MemberEntity memberEntity = memberRepository.findByMemberEmail(memberEmail).orElseThrow(() -> new NoSuchElementException());
         return MemberDTO.toMemberDTO(memberEntity);
+    }
+
+    public MemberDTO findById(Long id) {
+        MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        return MemberDTO.toMemberDTO(memberEntity);
+    }
+
+    public List<MemberDTO> findAll() {
+        List<MemberEntity> memberEntityList = memberRepository.findAll();
+        List<MemberDTO> memberDTOList = new ArrayList<>();
+        memberEntityList.forEach(memberEntity -> {
+            memberDTOList.add(MemberDTO.toMemberDTO(memberEntity));
+        });
+        return memberDTOList;
     }
 }

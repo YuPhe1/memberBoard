@@ -16,7 +16,7 @@
                 <img th:unless="${member.memberProfile != null}" src="https://via.placeholder.com/100x100" alt="" width="90%">
             </div>
             <div class="col-10">
-                <p th:text="|id: ${member.id}|"></p>
+                <p th:text="|회원번호: ${member.id}|"></p>
                 <p th:text="|이메일: ${member.memberEmail}|"></p>
                 <p th:text="|이름: ${member.memberName}|"></p>
                 <p th:text="|휴대폰: ${member.memberMobile}|"></p>
