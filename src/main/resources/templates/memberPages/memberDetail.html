@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="card p-3">
+        <div class="row">
+            <div class="col-2 text-center">
+                <img th:if="${member.memberProfile != null}" th:src="@{|/upload/member/${member.memberProfile}|}"
+                     alt=""
+                     width="90%">
+                <img th:unless="${member.memberProfile != null}" src="https://via.placeholder.com/100x100" alt="" width="90%">
+            </div>
+            <div class="col-10">
+                <p th:text="|id: ${member.id}|"></p>
+                <p th:text="|이메일: ${member.memberEmail}|"></p>
+                <p th:text="|이름: ${member.memberName}|"></p>
+                <p th:text="|휴대폰: ${member.memberMobile}|"></p>
+                <p th:text="|생년월일: ${member.memberBirth}|"></p>
+                <p th:text="|가입일: ${member.createdAt}|"></p>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary px-3" th:if="${session.loginEmail == member.memberEmail}"
+                        onclick="member_update_fn()">수정
+                </button>
+                <button class="btn btn-secondary px-3" onclick="home()">홈</button>
+                <button class="btn btn-danger px-3" th:if="${session.loginEmail == member.memberEmail}"
+                        onclick="member_delete_fn()">탈퇴
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    const home = () => {
+        location.href = "/";
+    }
+    const member_update_fn = () => {
+        location.href = "/member/update";
+    }
+    const member_delete_fn = () => {
+        location.href = "/member/delete-check";
+    }
+</script>
+</html>

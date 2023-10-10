@@ -42,7 +42,7 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "redirectURI", defaultValue = "/member/mypage") String redirectURI,
+    public String loginPage(@RequestParam(value = "redirectURI", defaultValue = "/member/myPage") String redirectURI,
                             Model model){
         model.addAttribute("redirectURI", redirectURI);
         return "memberPages/memberLogin";
@@ -70,5 +70,13 @@ public class MemberController {
     public String logout(HttpSession session){
         session.invalidate();
         return "redirect:/";
+    }
+
+    @GetMapping("/myPage")
+    public String myPage(HttpSession session, Model model){
+        String loginEmail = (String) session.getAttribute("loginEmail");
+        MemberDTO memberDTO = memberService.findByMemberEmail(loginEmail);
+        model.addAttribute("member", memberDTO);
+        return "memberPages/memberDetail";
     }
 }
