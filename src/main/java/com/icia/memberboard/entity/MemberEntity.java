@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter(AccessLevel.PRIVATE)
@@ -35,6 +37,8 @@ public class MemberEntity extends BaseEntity {
     @Column
     private String memberProfile;
 
+    @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<BoardEntity> boardEntityList = new ArrayList<>();
     public static MemberEntity toSaveEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setMemberEmail(memberDTO.getMemberEmail());
@@ -45,6 +49,7 @@ public class MemberEntity extends BaseEntity {
         memberEntity.setMemberProfile(memberDTO.getMemberProfile());
         return memberEntity;
     }
+
 
     public static MemberEntity toEntity(MemberDTO memberDTO) {
         MemberEntity memberEntity = new MemberEntity();
