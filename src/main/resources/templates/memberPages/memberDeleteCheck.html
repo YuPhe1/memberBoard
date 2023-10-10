@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="card p-3">
+        <h3 class="text-center">회원탈퇴</h3>
+        <form name="deleteCheck">
+            <div class="input-group mb-3">
+                <span class="input-group-text">비밀번호</span>
+                <input type="password" class="form-control" id="check-password">
+            </div>
+            <div class="text-center">
+                <button class="btn btn-danger">삭제</button>
+                <button type="button" class="btn btn-secondary" onclick="cancel_fn()">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    document.deleteCheck.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const loginPassword = [[${member.memberPassword}]];
+        const checkPassword = document.querySelector("#check-password").value;
+        const id = [[${member.id}]];
+        if(loginPassword == checkPassword){
+            if(confirm("탈퇴하시겠습니까?")){
+                axios({
+                    method: "delete",
+                    url: `/member/${id}`
+                }).then(res => {
+                    alert("삭제 성공");
+                    location.href = "/member/logout";
+                }). catch(err => {
+                    alert("삭제 실패")
+                })
+            }
+        } else {
+            alert("비밀번호가 틀렸습니다.");
+        }
+    });
+
+    const cancel_fn = () => {
+        location.href = "/";
+    }
+</script>
+</html>

@@ -63,4 +63,15 @@ public class MemberService {
         });
         return memberDTOList;
     }
+
+    public void deleteById(Long id) {
+        MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        if(memberEntity.getMemberProfile() != null){
+            File profile = new File("D:\\springboot_img\\member\\" + memberEntity.getMemberProfile());
+            if(profile.exists()){
+                profile.delete();
+            }
+        }
+        memberRepository.deleteById(id);
+    }
 }

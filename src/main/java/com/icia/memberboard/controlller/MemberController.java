@@ -21,17 +21,26 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    /**
+     * 회원가입 페이지
+     */
     @GetMapping("/save")
     public String savePage() {
         return "memberPages/memberSave";
     }
 
+    /**
+     * 회원가입
+     */
     @PostMapping("/save")
     public String save(@ModelAttribute MemberDTO memberDTO) throws IOException {
         memberService.save(memberDTO);
         return "redirect:/";
     }
 
+    /**
+     * 이메일 중복 체크
+     */
     @PostMapping("/dup-check")
     public ResponseEntity dupCheck(@RequestBody MemberDTO memberDTO) {
         boolean result = memberService.emailCheck(memberDTO.getMemberEmail());
@@ -42,6 +51,9 @@ public class MemberController {
         }
     }
 
+    /**
+     * 로그인 페이지
+     */
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "redirectURI", defaultValue = "/member/myPage") String redirectURI,
                             Model model) {
@@ -49,6 +61,9 @@ public class MemberController {
         return "memberPages/memberLogin";
     }
 
+    /**
+     * 로그인
+     */
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody MemberDTO memberDTO, HttpSession session) {
         try {
@@ -67,12 +82,18 @@ public class MemberController {
         }
     }
 
+    /**
+     * 로그아웃
+     */
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }
 
+    /**
+     * 회원 정보 조회(login)
+     */
     @GetMapping("/myPage")
     public String myPage(HttpSession session, Model model) {
         String loginEmail = (String) session.getAttribute("loginEmail");
@@ -81,6 +102,9 @@ public class MemberController {
         return "memberPages/memberDetail";
     }
 
+    /**
+     * 회원 정보 조회(id)
+     */
     @GetMapping("/{id}")
     public String myPage(@PathVariable("id") Long id, Model model) {
         try {
@@ -92,9 +116,34 @@ public class MemberController {
         }
     }
 
+
+    /**
+     * 회원목록 출력
+     */
     @GetMapping()
     public String list(Model model){
         model.addAttribute("memberList", memberService.findAll());
         return "memberPages/memberList";
+    }
+
+    /**
+     * 회원삭제
+     * axios
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id){
+        memberService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 회원삭제 비밀번호 확인
+     */
+    @GetMapping("/delete-check")
+    public String deleteCheck(Model model, HttpSession session){
+        String email = (String) session.getAttribute("loginEmail");
+        MemberDTO memberDTO = memberService.findByMemberEmail(email);
+        model.addAttribute("member", memberDTO);
+        return "memberPages/memberDeleteCheck";
     }
 }
