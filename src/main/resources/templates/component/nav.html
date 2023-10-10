@@ -20,12 +20,23 @@
                         <a class="nav-link" href="/board">글목록</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav justify-content-end mb-2 mb-lg-0">
+                <ul class="navbar-nav justify-content-end mb-2 mb-lg-0" th:if="${session.loginEmail == null}">
                     <li class="nav-item">
                         <a class="nav-link me-2" href="/member/login">로그인</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link me-2" href="/member/save">회원가입</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav justify-content-end mb-2 mb-lg-0" th:unless="${session.loginEmail == null}">
+                    <li class="nav-item" th:if="${session.loginEmail == 'admin'}">
+                        <a class="nav-link me-2" href="/member">회원목록</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link me-2" href="/member/logout">로그아웃</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link me-2" href="/member/mypage" th:text="|${session.loginName}님|"></a>
                     </li>
                 </ul>
             </div>

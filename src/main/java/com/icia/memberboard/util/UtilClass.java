@@ -12,4 +12,11 @@ public class UtilClass {
             return dateTime.format(DateTimeFormatter.ofPattern(("yyyy-MM-dd HH:mm:ss")));
         }
     }
+    public static String dateFormat(LocalDateTime dateTime){
+        if(dateTime == null)
+            return null;
+        else {
+            return dateTime.format(DateTimeFormatter.ofPattern(("yyyy-MM-dd")));
+        }
+    }
 }

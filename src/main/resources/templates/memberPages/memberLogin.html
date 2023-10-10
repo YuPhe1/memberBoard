@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="card p-3">
+        <form name="member" action="/member/login" method="post">
+            <input type="hidden" name="redirectURI" th:value="${redirectURI}">
+            <div class="input-group mb-3">
+                <span class="input-group-text">이메일</span>
+                <input type="text" name="memberEmail" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">비밀번호</span>
+                <input type="password" name="memberPassword" class="form-control">
+            </div>
+            <div id="login-check-area"></div>
+            <div class="text-center">
+                <button class="btn btn-primary">로그인</button>
+                <button class="btn btn-secondary" type="button" onclick="cancel_fn()">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    document.member.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const memberEmail = document.member.memberEmail.value;
+        const memberPassword = document.member.memberPassword.value;
+        const redirectURI = document.member.redirectURI.value;
+        axios({
+            method: "post",
+            url: "/member/login",
+            data: {
+                memberEmail: memberEmail,
+                memberPassword: memberPassword
+            }
+        }).then(res => {
+            location.href = redirectURI;
+        }).catch(err => {
+            const loginArea = document.querySelector("#login-check-area");
+            loginArea.innerHTML = "아이디또는 비밀번호가 틀렸습니다.";
+            loginArea.style.color = "red";
+        })
+    })
+
+    const cancel_fn = () => {
+        location.href = "/";
+    }
+</script>
+</html>
