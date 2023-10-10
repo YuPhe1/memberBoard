@@ -4,6 +4,7 @@ import com.icia.memberboard.dto.MemberDTO;
 import com.icia.memberboard.entity.MemberEntity;
 import com.icia.memberboard.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,5 +74,24 @@ public class MemberService {
             }
         }
         memberRepository.deleteById(id);
+    }
+
+    public void update(MemberDTO memberDTO) throws IOException {
+        if (!memberDTO.getProfile().isEmpty()) {
+            if(memberDTO.getMemberProfile() != null){
+                File file = new File("D:\\springboot_img\\member\\" + memberDTO.getMemberProfile());
+                if(file.exists()){
+                    file.delete();
+                }
+            }
+            MultipartFile profile = memberDTO.getProfile();
+            String originalName = profile.getOriginalFilename();
+            String storedFileName = System.currentTimeMillis() + "_" + originalName;
+            String savePath = "D:\\springboot_img\\member\\" + storedFileName;
+            profile.transferTo((new File(savePath)));
+            memberDTO.setMemberProfile(storedFileName);
+        }
+        MemberEntity memberEntity = MemberEntity.toEntity(memberDTO);
+        memberRepository.save(memberEntity);
     }
 }

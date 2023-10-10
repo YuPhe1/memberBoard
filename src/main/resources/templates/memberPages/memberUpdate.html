@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <div class="card p-3">
+                <form action="/member/update" name="member" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" th:value="${member.id}">
+                    <input type="hidden" name="memberProfile" th:value="${member.memberProfile}">
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <img id="profile-image" th:if="${member.memberProfile != null}"
+                                 th:src="@{|/upload/member/${member.memberProfile}|}"
+                                 alt=""
+                                 width="90%">
+                            <img id="profile-image" th:unless="${member.memberProfile != null}" src="https://via.placeholder.com/100x100"
+                                 alt="" width="90%">
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">이메일</span>
+                                <input type="text" name="memberEmail" class="form-control"
+                                       th:value="${member.memberEmail}" readonly>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">비밀번호</span>
+                                <input type="password" name="memberPassword" class="form-control">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">이름</span>
+                                <input type="text" name="memberName" class="form-control"
+                                       th:value="${member.memberName}">
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">전화번호</span>
+                            <input type="text" name="memberMobile" class="form-control"
+                                   th:value="${member.memberMobile}">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">생년월일</span>
+                            <input type="date" name="memberBirth" class="form-control" th:value="${member.memberBirth}">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="file" id="profile" style="display: none" name="profile" class="form-control">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary">수정</button>
+                        <button type="button" class="btn btn-secondary mx-2" onclick="cancel_fn()">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    document.getElementById("profile-image").addEventListener("click", () => {
+        document.getElementById("profile").click();
+    });
+    document.getElementById("profile").addEventListener("change", (e) => {
+        document.getElementById("profile-image").src = URL.createObjectURL(e.target.files[0]);
+    });
+
+    document.querySelector('[name="member"]').addEventListener("submit", (e) => {
+        e.preventDefault();
+        const passDB = [[${member.memberPassword}]];
+        const memberPassword = document.querySelector('[name="memberPassword"]').value;
+        if(memberPassword == passDB){
+            document.querySelector('[name="member"]').submit();
+        } else {
+            alert("비밀번호가 틀립니다.");
+        }
+    });
+
+    const cancel_fn = () => {
+        location.href = "/member/myPage";
+    }
+</script>
+</html>

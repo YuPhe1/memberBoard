@@ -35,7 +35,7 @@ public class MemberController {
     @PostMapping("/save")
     public String save(@ModelAttribute MemberDTO memberDTO) throws IOException {
         memberService.save(memberDTO);
-        return "redirect:/";
+        return "redirect:/member/login";
     }
 
     /**
@@ -145,5 +145,26 @@ public class MemberController {
         MemberDTO memberDTO = memberService.findByMemberEmail(email);
         model.addAttribute("member", memberDTO);
         return "memberPages/memberDeleteCheck";
+    }
+
+    /**
+     * 회원 수정 페이지
+     */
+    @GetMapping("/update")
+    public String updatePage(Model model, HttpSession session){
+        String email = (String) session.getAttribute("loginEmail");
+        MemberDTO memberDTO = memberService.findByMemberEmail(email);
+        model.addAttribute("member", memberDTO);
+        return "memberPages/memberUpdate";
+    }
+
+    /**
+     * 회원수정
+     */
+    @PostMapping("/update")
+    public String update(HttpSession session, @ModelAttribute MemberDTO memberDTO) throws IOException {
+        memberService.update(memberDTO);
+        session.invalidate();
+        return "redirect:/member/login";
     }
 }

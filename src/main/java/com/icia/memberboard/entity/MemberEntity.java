@@ -45,4 +45,16 @@ public class MemberEntity extends BaseEntity {
         memberEntity.setMemberProfile(memberDTO.getMemberProfile());
         return memberEntity;
     }
+
+    public static MemberEntity toEntity(MemberDTO memberDTO) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setId(memberDTO.getId());
+        memberEntity.setMemberEmail(memberDTO.getMemberEmail());
+        memberEntity.setMemberPassword(memberDTO.getMemberPassword());
+        memberEntity.setMemberName(memberDTO.getMemberName());
+        memberEntity.setMemberMobile(memberDTO.getMemberMobile());
+        memberEntity.setMemberBirth(memberDTO.getMemberBirth());
+        memberEntity.setMemberProfile(memberDTO.getMemberProfile());
+        return memberEntity;
+    }
 }
