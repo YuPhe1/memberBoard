@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <div class="card p-3">
+                <form action="/member/save" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <img src="https://via.placeholder.com/100x100" alt="" width="90%" id="profile-image">
+                        </div>
+                        <div class="col-10">
+                            <div class="input-group">
+                                <span class="input-group-text">이메일</span>
+                                <input type="text" name="memberEmail" class="form-control">
+                                <button type="button" class="btn btn-outline-secondary">중복체크</button>
+                            </div>
+                            <div class="mb-3" id="check-email"></div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">비밀번호</span>
+                                <input type="password" name="memberPassword" class="form-control">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">이름</span>
+                                <input type="text" name="memberName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">전화번호</span>
+                            <input type="text" name="memberMobile" class="form-control">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">생년월일</span>
+                            <input type="date" name="memberBirth" class="form-control">
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="file" id="profile" style="display: none" name="profile" class="form-control">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary">회원가입</button>
+                        <button type="button" class="btn btn-secondary mx-2">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    document.getElementById("profile-image").addEventListener("click", () => {
+        document.getElementById("profile").click();
+    })
+    document.getElementById("profile").addEventListener("change", (e) => {
+        document.getElementById("profile-image").src = URL.createObjectURL(e.target.files[0]);
+    })
+</script>
+</html>
