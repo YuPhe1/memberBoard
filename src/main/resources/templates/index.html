@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+  <h2 class="text-center">회원제게시판 입니다.</h2>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+</html>
