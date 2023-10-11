@@ -41,25 +41,27 @@ public class BoardEntity extends BaseEntity{
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BoardFileEntity> boardFileEntityList = new ArrayList<>();
 
-    public static BoardEntity toSaveEntity(BoardDTO boardDTO) {
+    public static BoardEntity toSaveEntity(BoardDTO boardDTO, MemberEntity memberEntity) {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setFileAttached(0);
+        boardEntity.setMemberEntity(memberEntity);
         return boardEntity;
     }
 
-    public static BoardEntity toSaveEntityWithFile(BoardDTO boardDTO) {
+    public static BoardEntity toSaveEntityWithFile(BoardDTO boardDTO, MemberEntity memberEntity) {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setFileAttached(1);
+        boardEntity.setMemberEntity(memberEntity);
         return boardEntity;
     }
 
-    public static BoardEntity toBoardEntity(BoardDTO boardDTO){
+    public static BoardEntity toBoardEntity(BoardDTO boardDTO, MemberEntity memberEntity){
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setId(boardDTO.getId());
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
@@ -67,6 +69,7 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setFileAttached(boardDTO.getFileAttached());
         boardEntity.setBoardHits(boardDTO.getBoardHits());
+        boardEntity.setMemberEntity(memberEntity);
         return boardEntity;
     }
 }

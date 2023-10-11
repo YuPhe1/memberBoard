@@ -3,6 +3,7 @@ package com.icia.memberboard.service;
 import com.icia.memberboard.dto.BoardDTO;
 import com.icia.memberboard.entity.BoardEntity;
 import com.icia.memberboard.entity.BoardFileEntity;
+import com.icia.memberboard.entity.MemberEntity;
 import com.icia.memberboard.repository.BoardFileRepository;
 import com.icia.memberboard.repository.BoardRepository;
 import com.icia.memberboard.repository.MemberRepository;
@@ -29,11 +30,12 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
 
     public Long save(BoardDTO boardDTO) {
+        MemberEntity memberEntity = memberRepository.findByMemberEmail(boardDTO.getBoardWriter()).orElseThrow(() -> new NoSuchElementException());
         if (boardDTO.getBoardFile().get(0).isEmpty()) {
-            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO, memberEntity);
             return boardRepository.save(boardEntity).getId();
         } else {
-            BoardEntity boardEntity = BoardEntity.toSaveEntityWithFile(boardDTO);
+            BoardEntity boardEntity = BoardEntity.toSaveEntityWithFile(boardDTO, memberEntity);
             BoardEntity savedEntity = boardRepository.save(boardEntity);
             List<MultipartFile> boardFileList = boardDTO.getBoardFile();
             boardFileList.forEach(multipartFile -> {
@@ -133,7 +135,8 @@ public class BoardService {
                 boardFileRepository.save(boardFileEntity);
             }
         }
-        BoardEntity updateEntity = BoardEntity.toBoardEntity(boardDTO);
+        MemberEntity memberEntity = memberRepository.findByMemberEmail(boardDTO.getBoardWriter()).orElseThrow(() -> new NoSuchElementException());
+        BoardEntity updateEntity = BoardEntity.toBoardEntity(boardDTO, memberEntity);
         boardRepository.save(updateEntity);
     }
 }
