@@ -55,7 +55,7 @@ public class MemberController {
      * 로그인 페이지
      */
     @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "redirectURI", defaultValue = "/member/myPage") String redirectURI,
+    public String loginPage(@RequestParam(value = "redirectURI", defaultValue = "/board") String redirectURI,
                             Model model) {
         model.addAttribute("redirectURI", redirectURI);
         return "memberPages/memberLogin";

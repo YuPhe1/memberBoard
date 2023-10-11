@@ -5,6 +5,7 @@ import com.icia.memberboard.entity.BoardEntity;
 import com.icia.memberboard.entity.BoardFileEntity;
 import com.icia.memberboard.repository.BoardFileRepository;
 import com.icia.memberboard.repository.BoardRepository;
+import com.icia.memberboard.repository.MemberRepository;
 import com.icia.memberboard.util.UtilClass;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class BoardService {
 
+    private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
 
@@ -44,7 +46,7 @@ public class BoardService {
                     System.out.println("게시물 파일 저장 오류");
                     throw new RuntimeException(e);
                 }
-                BoardFileEntity boardFileEntity = BoardFileEntity.toSaveEntity(boardEntity, originalFileName, storedFileName);
+                BoardFileEntity boardFileEntity = BoardFileEntity.toSaveEntity(savedEntity, originalFileName, storedFileName);
                 boardFileRepository.save(boardFileEntity);
             });
             return savedEntity.getId();
@@ -99,5 +101,39 @@ public class BoardService {
             }
         });
         boardRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void update(BoardDTO boardDTO, List<String> deleteFileList) throws IOException {
+        BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() -> new NoSuchElementException());
+        List<BoardFileEntity> boardFileEntityList = boardEntity.getBoardFileEntityList();
+        if(deleteFileList != null){
+            if(deleteFileList.size() == boardFileEntityList.size() && boardDTO.getBoardFile().get(0).isEmpty()){
+                boardDTO.setFileAttached(0);
+            } else {
+                boardDTO.setFileAttached(1);
+            }
+            deleteFileList.forEach(deleteFile -> {
+                File file = new File("D:\\springboot_img\\board\\"+ deleteFile);
+                if(file.exists()){
+                    file.delete();
+                }
+                boardFileRepository.deleteByStoredFileName(deleteFile);
+            });
+        }
+        if(!boardDTO.getBoardFile().get(0).isEmpty()){
+            boardDTO.setFileAttached(1);
+            List<MultipartFile> boardFileList = boardDTO.getBoardFile();
+            for(MultipartFile boardFile : boardFileList){
+                String originalFileName = boardFile.getOriginalFilename();
+                String storedFileName = System.currentTimeMillis() + "_" + originalFileName;
+                String savePath = "D:\\springboot_img\\board\\";
+                boardFile.transferTo(new File(savePath+storedFileName));
+                BoardFileEntity boardFileEntity = BoardFileEntity.toSaveEntity(boardEntity, originalFileName, storedFileName);
+                boardFileRepository.save(boardFileEntity);
+            }
+        }
+        BoardEntity updateEntity = BoardEntity.toBoardEntity(boardDTO);
+        boardRepository.save(updateEntity);
     }
 }

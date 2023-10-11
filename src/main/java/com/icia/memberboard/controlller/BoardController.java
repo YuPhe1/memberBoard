@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -42,12 +45,12 @@ public class BoardController {
     }
 
     @GetMapping("/save")
-    public String savePage(){
+    public String savePage() {
         return "boardPages/boardSave";
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute BoardDTO boardDTO){
+    public String save(@ModelAttribute BoardDTO boardDTO) {
         boardService.save(boardDTO);
         return "redirect:/board";
     }
@@ -58,7 +61,7 @@ public class BoardController {
                            @RequestParam(value = "type", required = false, defaultValue = "boardTitle") String type,
                            @RequestParam(value = "q", required = false, defaultValue = "") String q,
                            HttpServletRequest request, HttpServletResponse response,
-                           Model model){
+                           Model model) {
         Cookie[] cookies = request.getCookies();
         boolean isHit = false;
         for (Cookie cookie : cookies) {
@@ -73,22 +76,39 @@ public class BoardController {
             cookie.setMaxAge(5 * 60);
             response.addCookie(cookie);
         }
-        try{
+        try {
             BoardDTO boardDTO = boardService.findById(id);
             model.addAttribute("board", boardDTO);
             model.addAttribute("page", page);
             model.addAttribute("type", type);
             model.addAttribute("q", q);
             return "boardPages/boardDetail";
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return "boardPages/boardNotFound";
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable("id") Long id){
+    public ResponseEntity delete(@PathVariable("id") Long id) {
         boardService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/update/{id}")
+    public String updatePage(@PathVariable("id") Long id, Model model, HttpSession session) {
+        BoardDTO boardDTO = boardService.findById(id);
+        if (boardDTO.getBoardWriter().equals((String) session.getAttribute("loginEmail"))) {
+            model.addAttribute("board", boardDTO);
+            return "boardPages/boardUpdate";
+        } else {
+            model.addAttribute("redirectURI", "/board/" + id);
+            return "boardPages/boardNoAuthority";
+        }
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute BoardDTO boardDTO, @RequestParam(name = "deleteFile", required = false) List<String> deleteFileList) throws IOException {
+        boardService.update(boardDTO, deleteFileList);
+        return "redirect:/board/" + boardDTO.getId();
+    }
 }

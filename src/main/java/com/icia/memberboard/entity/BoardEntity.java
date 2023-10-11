@@ -35,7 +35,7 @@ public class BoardEntity extends BaseEntity{
     private int fileAttached;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
+    @JoinColumn(name = "writer_id")
     private MemberEntity memberEntity;
 
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -56,6 +56,17 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setFileAttached(1);
+        return boardEntity;
+    }
+
+    public static BoardEntity toBoardEntity(BoardDTO boardDTO){
+        BoardEntity boardEntity = new BoardEntity();
+        boardEntity.setId(boardDTO.getId());
+        boardEntity.setBoardWriter(boardDTO.getBoardWriter());
+        boardEntity.setBoardTitle(boardDTO.getBoardTitle());
+        boardEntity.setBoardContents(boardDTO.getBoardContents());
+        boardEntity.setFileAttached(boardDTO.getFileAttached());
+        boardEntity.setBoardHits(boardDTO.getBoardHits());
         return boardEntity;
     }
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="card p-3">
+        <form name="board" action="/board/update" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" th:value="${board.id}">
+            <input type="hidden" name="boardHits" th:value="${board.boardHits}">
+            <div class="input-group mb-3">
+            <span class="input-group-text">
+                글제목
+            </span>
+                <input type="text" class="form-control" name="boardTitle" th:value="${board.boardTitle}">
+            </div>
+            <div class="input-group mb-3">
+            <span class="input-group-text">
+                작성자
+            </span>
+                <input type="text" class="form-control" name="boardWriter" th:value="${board.boardWriter}" readonly>
+            </div>
+            <div class="input-group mb-3">
+                <textarea class="form-control" name="boardContents" rows="5" th:text="${board.boardContents}"></textarea>
+            </div>
+            <div class="input-group mb-3" th:if="${board.fileAttached == 1}">
+                <span class="input-group-text">삭제할 파일</span>
+                <span class="form-control">
+                    <span th:each="boardFile: ${board.boardFileDTOList}">
+                        <input type="checkbox" name="deleteFile" th:value="${boardFile.storedFileName}" th:text="${boardFile.originalFileName}">
+                    </span>
+                </span>
+            </div>
+            <div class="input-group mb-3">
+                <input type="file" name="boardFile" class="form-control" multiple>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary">수정</button>
+                <button type="button" class="btn btn-secondary" onclick="cancel_fn()">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+    const cancel_fn = () => {
+        const id = [[${board.id}]]
+        location.href = `/board/${id}`;
+    }
+</script>
+</html>

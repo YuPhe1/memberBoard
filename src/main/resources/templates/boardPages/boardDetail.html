@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="text-end" th:if="${session.loginEmail == board.boardWriter}">
-            <button class="btn btn-warning btn-sm" >수정</button>
+            <button class="btn btn-warning btn-sm" th:onclick="update_fn([[${board.id}]])">수정</button>
             <button class="btn btn-danger btn-sm" th:onclick="delete_fn([[${board.id}]])">삭제</button>
         </div>
         <div class="text-end" th:if="${session.loginEmail == 'admin'}">
@@ -42,6 +42,10 @@
 <div th:replace="~{component/footer :: footer}"></div>
 </body>
 <script th:inline="javascript">
+
+    const update_fn = (id) => {
+      location.href = `/board/update/${id}`;
+    };
 
     const delete_fn = (id) => {
         if(confirm("해당 게시글을 삭제하시겠습니까? ")){
