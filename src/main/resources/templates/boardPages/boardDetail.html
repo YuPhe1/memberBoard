@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{component/config :: config}"></th:block>
+</head>
+<body>
+<div th:replace="~{component/header :: header}"></div>
+<div th:replace="~{component/nav :: nav}"></div>
+<div class="container my-3">
+    <div class="card p-3">
+        <div class="card-title mb-1" th:text="${board.boardTitle}"></div>
+        <div class="row">
+            <div class="col-6">
+                <div class="card-subtitle mb-1 text-body-secondary" th:text="|작성자: ${board.boardWriter}|"></div>
+            </div>
+            <div class="col-6 text-end" th:if="${board.updatedAt == null}">
+                <div class="card-subtitle mb-1 text-body-secondary" th:text="|조회수: ${board.boardHits} 작성시간: ${board.createdAt}|"></div>
+            </div>
+            <div class="col-6 text-end" th:unless="${board.updatedAt == null}">
+                <div class="card-subtitle mb-1 text-body-secondary" th:text="|조회수: ${board.boardHits} 수정시간: ${board.updatedAt}|"></div>
+            </div>
+        </div>
+        <hr>
+        <div class="card-text" th:text="${board.boardContents}"></div>
+        <div class="row" th:if="${board.fileAttached == 1}">
+            <div class="col-3" th:each="boardFile: ${board.boardFileDTOList}">
+                <img th:src="@{|/upload/board/${boardFile.storedFileName}|}" width="90%">
+            </div>
+        </div>
+        <div class="text-end" th:if="${session.loginEmail == board.boardWriter}">
+            <button class="btn btn-warning btn-sm">수정</button>
+            <button class="btn btn-danger btn-sm">삭제</button>
+        </div>
+        <div class="text-end" th:if="${session.loginEmail == 'admin'}">
+            <button class="btn btn-danger btn-sm">삭제</button>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-secondary" onclick="toList()">목록으로</button>
+        </div>
+    </div>
+</div>
+<div th:replace="~{component/footer :: footer}"></div>
+</body>
+<script th:inline="javascript">
+
+    const toList = () => {
+        const page = [[${page}]];
+        const type = [[${type}]];
+        const q = [[${q}]];
+        location.href = `/board?page=${page}&type=${type}&q=${q}`;
+    }
+</script>
+</html>

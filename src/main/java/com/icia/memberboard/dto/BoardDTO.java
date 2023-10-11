@@ -27,8 +27,7 @@ public class BoardDTO {
     private int boardHits;
     private int fileAttached;
     private List<MultipartFile> boardFile;
-    private List<String> originalFileName = new ArrayList<>();
-    private List<String> storedFileName = new ArrayList<>();
+    private List<BoardFileDTO> boardFileDTOList = new ArrayList<>();
 
     public static BoardDTO toDTO(BoardEntity boardEntity){
         BoardDTO boardDTO = new BoardDTO();
@@ -44,8 +43,7 @@ public class BoardDTO {
         if(boardEntity.getFileAttached() == 1){
             boardDTO.setFileAttached(1);
             for(BoardFileEntity boardFileEntity : boardEntity.getBoardFileEntityList()){
-                boardDTO.getOriginalFileName().add(boardFileEntity.getOriginalFileName());
-                boardDTO.getStoredFileName().add(boardFileEntity.getStoredFileName());
+                boardDTO.getBoardFileDTOList().add(BoardFileDTO.toBoardFileDTO(boardFileEntity));
             }
         } else {
             boardDTO.setFileAttached(0);
