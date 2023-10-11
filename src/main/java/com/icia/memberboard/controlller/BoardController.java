@@ -4,6 +4,8 @@ import com.icia.memberboard.dto.BoardDTO;
 import com.icia.memberboard.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -82,4 +84,11 @@ public class BoardController {
             return "boardPages/boardNotFound";
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id){
+        boardService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

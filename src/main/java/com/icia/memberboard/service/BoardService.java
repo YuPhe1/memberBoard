@@ -87,4 +87,17 @@ public class BoardService {
     public BoardDTO findById(Long id) {
         return BoardDTO.toDTO(boardRepository.findById(id).orElseThrow(()->new NoSuchElementException()));
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(()->new NoSuchElementException());
+        List<BoardFileEntity> boardFileEntityList = boardEntity.getBoardFileEntityList();
+        boardFileEntityList.forEach(boardFileEntity -> {
+            File file = new File("D:\\springboot_img\\board\\" + boardFileEntity.getStoredFileName());
+            if(file.exists()){
+                file.delete();
+            }
+        });
+        boardRepository.deleteById(id);
+    }
 }

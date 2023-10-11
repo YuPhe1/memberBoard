@@ -28,11 +28,11 @@
             </div>
         </div>
         <div class="text-end" th:if="${session.loginEmail == board.boardWriter}">
-            <button class="btn btn-warning btn-sm">수정</button>
-            <button class="btn btn-danger btn-sm">삭제</button>
+            <button class="btn btn-warning btn-sm" >수정</button>
+            <button class="btn btn-danger btn-sm" th:onclick="delete_fn([[${board.id}]])">삭제</button>
         </div>
         <div class="text-end" th:if="${session.loginEmail == 'admin'}">
-            <button class="btn btn-danger btn-sm">삭제</button>
+            <button class="btn btn-danger btn-sm" th:onclick="delete_fn([[${board.id}]])">삭제</button>
         </div>
         <div class="text-center">
             <button class="btn btn-secondary" onclick="toList()">목록으로</button>
@@ -42,6 +42,22 @@
 <div th:replace="~{component/footer :: footer}"></div>
 </body>
 <script th:inline="javascript">
+
+    const delete_fn = (id) => {
+        if(confirm("해당 게시글을 삭제하시겠습니까? ")){
+            axios({
+                method:"delete",
+                url:`/board/${id}`
+            }).then(res => {
+                alert("삭제성공");
+                location.href = "/board";
+            }).catch(err => {
+                alert("삭제실패");
+            });
+        } else {
+            alert("취소");
+        }
+    }
 
     const toList = () => {
         const page = [[${page}]];
