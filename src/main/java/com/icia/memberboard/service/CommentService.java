@@ -44,4 +44,11 @@ public class CommentService {
     public void deleteById(Long id) {
         commentRepository.deleteById(id);
     }
+
+    public void update(CommentDTO commentDTO) {
+        MemberEntity memberEntity = memberRepository.findById(commentDTO.getMemberId()).orElseThrow(() -> new NoSuchElementException());
+        BoardEntity boardEntity = boardRepository.findById(commentDTO.getBoardId()).orElseThrow(() -> new NoSuchElementException());
+        CommentEntity commentEntity = CommentEntity.toCommentEntity(commentDTO, memberEntity, boardEntity);
+        commentRepository.save(commentEntity);
+    }
 }

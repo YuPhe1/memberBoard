@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -39,6 +36,17 @@ public class CommentController {
             List<CommentDTO> commentDTOList = commentService.findByBoardId(commentDTO.getBoardId());
             return new ResponseEntity(commentDTOList, HttpStatus.OK);
         } catch (NoSuchElementException e){
+            return new ResponseEntity(HttpStatus.CONFLICT);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity update(@RequestBody CommentDTO commentDTO){
+        try {
+            commentService.update(commentDTO);
+            List<CommentDTO> commentDTOList = commentService.findByBoardId(commentDTO.getBoardId());
+            return new ResponseEntity(commentDTOList, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
             return new ResponseEntity(HttpStatus.CONFLICT);
         }
     }

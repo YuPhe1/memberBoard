@@ -42,16 +42,37 @@
         <hr>
         <div id="comment-area">
             <div th:each="comment: ${board.commentDTOList}">
-                <div class="mb-1" th:text="|작성자: ${comment.commentWriter}|"></div>
-                <div class="mb-1" th:text="${comment.commentContents}"></div>
-                <div class="mb-1" style="font-size: 10px; color: gray" th:if="${comment.updatedAt == null}" th:text="|작성시간: ${comment.createdAt}|"></div>
-                <div class="mb-1" style="font-size: 10px; color: gray" th:unless="${comment.updatedAt == null}" th:text="|수정시간: ${comment.updatedAt}|"></div>
-                <div class="text-end" th:if="${comment.commentWriter == session.loginEmail}">
-                    <button class="btn btn-secondary btn-sm">수정</button>
-                    <button class="btn btn-danger btn-sm" th:onclick="comment_delete_fn([[${comment.id}]])">삭제</button>
+                <div th:id="|comment-${comment.id}|">
+                    <div class="mb-1" th:text="|작성자: ${comment.commentWriter}|"></div>
+                    <div class="mb-1" th:text="${comment.commentContents}"></div>
+                    <div class="mb-1" style="font-size: 10px; color: gray" th:if="${comment.updatedAt == null}"
+                         th:text="|작성시간: ${comment.createdAt}|"></div>
+                    <div class="mb-1" style="font-size: 10px; color: gray" th:unless="${comment.updatedAt == null}"
+                         th:text="|수정시간: ${comment.updatedAt}|"></div>
+                    <div class="text-end" th:if="${comment.commentWriter == session.loginEmail}">
+                        <button class="btn btn-secondary btn-sm" th:onclick="update_area([[${comment.id}]])">수정</button>
+                        <button class="btn btn-danger btn-sm" th:onclick="comment_delete_fn([[${comment.id}]])">삭제
+                        </button>
+                    </div>
+                    <div class="text-end" th:if="${session.loginEmail == 'admin'}">
+                        <button class="btn btn-danger btn-sm" th:onclick="comment_delete_fn([[${comment.id}]])">삭제
+                        </button>
+                    </div>
                 </div>
-                <div class="text-end" th:if="${session.loginEmail == 'admin'}">
-                    <button class="btn btn-danger btn-sm" th:onclick="comment_delete_fn([[${comment.id}]])">삭제</button>
+                <div th:id="|comment-update-${comment.id}|" th:if="${comment.commentWriter == session.loginEmail}"
+                     style="display: none">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">작성자</span>
+                        <input class="form-control" th:id="|commentWriter${comment.id}|"
+                               th:value="${comment.commentWriter}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        <textarea class="form-control" th:id="|commentContents${comment.id}|"
+                                  th:text="${comment.commentContents}" rows="2"></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-secondary btn-sm" th:onclick="comment_update([[${comment.id}]])">수정</button>
+                    </div>
                 </div>
                 <hr>
             </div>
@@ -59,18 +80,19 @@
         <div id="comment-save" th:if="${session.loginEmail != null}">
             <div class="input-group mb-2">
                 <span class="input-group-text">작성자</span>
-                <input name="commentWriter" id="commentWriter" class="form-control" th:value="${session.loginEmail}" readonly>
+                <input name="commentWriter" id="commentWriter" class="form-control" th:value="${session.loginEmail}"
+                       readonly>
             </div>
             <div class="input-group mb-2">
                 <textarea class="form-control" id="commentContents" name="commentContents" rows="2"></textarea>
             </div>
             <div class="text-end">
-                <button class="btn btn-secondary" onclick="comment_save()">댓글등록</button>
+                <button class="btn btn-secondary btn-sm" onclick="comment_save()">댓글등록</button>
             </div>
         </div>
         <div id="comment-save-not-login" th:unless="${session.loginEmail != null}">
             <div class="text-end">
-                <button class="btn btn-secondary" onclick="toLogin()">댓글작성</button>
+                <button class="btn btn-secondary btn-sm" onclick="toLogin()">댓글작성</button>
             </div>
         </div>
     </div>
@@ -85,23 +107,39 @@
     const print_comment = (commentList) => {
         const commentArea = document.querySelector("#comment-area");
         let result = "";
-        for(let i in commentList){
+        for (let i in commentList) {
+            result += "<div id=\"comment-" + commentList[i].id + "\">";
             result += "<div class=\"mb-1\">작성자: " + commentList[i].commentWriter + "</div>";
-            result += "<div class=\"mb-1\">"+ commentList[i].commentContents + "</div>";
-            if(commentList[i].updatedAt == null) {
-                result += "<div class=\"mb-1\" style=\"font-size: 10px; color: gray\">작성시간: "+ commentList[i].createdAt +"</div>";
+            result += "<div class=\"mb-1\">" + commentList[i].commentContents + "</div>";
+            if (commentList[i].updatedAt == null) {
+                result += "<div class=\"mb-1\" style=\"font-size: 10px; color: gray\">작성시간: " + commentList[i].createdAt + "</div>";
             } else {
-                result += "<div class=\"mb-1\" style=\"font-size: 10px; color: gray\">수정시간: "+ commentList[i].updatedAt +"</div>";
+                result += "<div class=\"mb-1\" style=\"font-size: 10px; color: gray\">수정시간: " + commentList[i].updatedAt + "</div>";
             }
-            if(commentList[i].commentWriter == commentWriter) {
+            if (commentList[i].commentWriter == commentWriter) {
                 result += "<div class=\"text-end\">";
-                result += "<button class=\"btn btn-secondary btn-sm\">수정</button>\n";
-                result += "<button class=\"btn btn-danger btn-sm\" onclick=\"comment_delete_fn("+ commentList[i].id +")\">삭제</button>";
+                result += "<button class=\"btn btn-secondary btn-sm\" onclick=\"update_area(" + commentList[i].id + ")\">수정</button>\n";
+                result += "<button class=\"btn btn-danger btn-sm\" onclick=\"comment_delete_fn(" + commentList[i].id + ")\">삭제</button>";
                 result += "</div>";
             }
-            if(commentWriter == 'admin') {
+            if (commentWriter == 'admin') {
                 result += "<div class=\"text-end\">";
-                result += "<button class=\"btn btn-danger btn-sm\" onclick=\"comment_delete_fn("+ commentList[i].id +")\">삭제</button>";
+                result += "<button class=\"btn btn-danger btn-sm\" onclick=\"comment_delete_fn(" + commentList[i].id + ")\">삭제</button>";
+                result += "</div>";
+            }
+            result += "</div>";
+            if (commentList[i].commentWriter == commentWriter) {
+                result += "<div id=\"comment-update-" + commentList[i].id + "\" style=\"display: none\">";
+                result += "<div class=\"input-group mb-2\">";
+                result += "<span class=\"input-group-text\">작성자</span>";
+                result += "<input name=\"commentWriter\" id=\"commentWriter" + commentList[i].id + "\" class=\"form-control\" value=\"" + commentList[i].commentWriter + "\" readonly>"
+                result += "</div>";
+                result += "<div class=\"input-group mb-2\">";
+                result += "<textarea class=\"form-control\" id=\"commentContents" + commentList[i].id + "\" rows=\"2\">" + commentList[i].commentContents + "</textarea>";
+                result += "</div>";
+                result += "<div class=\"text-end\">";
+                result += "<button class=\"btn btn-secondary btn-sm\" onclick=\"comment_update("+ commentList[i].id +")\">수정</button>";
+                result += "</div>";
                 result += "</div>";
             }
             result += "<hr>";
@@ -143,15 +181,14 @@
 
     const comment_save = () => {
         const commentContents = document.querySelector("#commentContents").value;
-        console.log(`memberId:${memberId}, boardId:${boardId}, writer:${commentWriter}, contents:${commentContents}`);
         axios({
-            method:"post",
-            url:"/comment",
-            data:{
-                memberId:memberId,
-                boardId:boardId,
-                commentWriter:commentWriter,
-                commentContents:commentContents
+            method: "post",
+            url: "/comment",
+            data: {
+                memberId: memberId,
+                boardId: boardId,
+                commentWriter: commentWriter,
+                commentContents: commentContents
             }
         }).then(res => {
             document.querySelector("#commentContents").value = "";
@@ -161,7 +198,7 @@
         });
     }
     const comment_delete_fn = (commentId) => {
-        if(confirm("삭제하시겠습니까?")) {
+        if (confirm("삭제하시겠습니까?")) {
             axios({
                 method: "delete",
                 url: "/comment",
@@ -174,6 +211,39 @@
                 print_comment(res.data);
             }).catch(err => {
                 alert("삭제실패")
+            });
+        }
+    }
+
+    const update_area = (id) => {
+        const hide = "#comment-" + id;
+        const show = "#comment-update-" + id;
+        const hideArea = document.querySelector(hide);
+        const showArea = document.querySelector(show);
+        hideArea.style.display = "none";
+        showArea.style.display = "block";
+    }
+
+    const comment_update = (commentId) => {
+        if(confirm("수정하시겠습니까?")) {
+            const writerId = "#commentWriter" + commentId;
+            const contentsId = "#commentContents" + commentId;
+            const commentWriter = document.querySelector(writerId).value;
+            const commentContents = document.querySelector(contentsId).value;
+            axios({
+                method: "put",
+                url: "/comment",
+                data: {
+                    id: commentId,
+                    memberId: memberId,
+                    boardId: boardId,
+                    commentWriter: commentWriter,
+                    commentContents: commentContents
+                }
+            }).then(res => {
+                print_comment(res.data);
+            }).catch(err => {
+                alert("수정실패");
             });
         }
     }
