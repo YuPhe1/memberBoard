@@ -2,6 +2,7 @@ package com.icia.memberboard.dto;
 
 import com.icia.memberboard.entity.BoardEntity;
 import com.icia.memberboard.entity.BoardFileEntity;
+import com.icia.memberboard.entity.CommentEntity;
 import com.icia.memberboard.util.UtilClass;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,7 @@ public class BoardDTO {
     private int fileAttached;
     private List<MultipartFile> boardFile;
     private List<BoardFileDTO> boardFileDTOList = new ArrayList<>();
-
+    private List<CommentDTO> commentDTOList = new ArrayList<>();
     public static BoardDTO toDTO(BoardEntity boardEntity){
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setId(boardEntity.getId());
@@ -47,6 +48,11 @@ public class BoardDTO {
             }
         } else {
             boardDTO.setFileAttached(0);
+        }
+        if(boardEntity.getCommentEntityList().size() != 0){
+            for (CommentEntity commentEntity: boardEntity.getCommentEntityList()){
+                boardDTO.getCommentDTOList().add(CommentDTO.toCommentDTO(commentEntity));
+            }
         }
         return boardDTO;
     }
