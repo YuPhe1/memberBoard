@@ -48,10 +48,10 @@
                 <div class="mb-1" style="font-size: 10px; color: gray" th:unless="${comment.updatedAt == null}" th:text="|수정시간: ${comment.updatedAt}|"></div>
                 <div class="text-end" th:if="${comment.commentWriter == session.loginEmail}">
                     <button class="btn btn-secondary btn-sm">수정</button>
-                    <button class="btn btn-danger btn-sm">삭제</button>
+                    <button class="btn btn-danger btn-sm" th:onclick="comment_delete_fn([[${comment.id}]])">삭제</button>
                 </div>
                 <div class="text-end" th:if="${session.loginEmail == 'admin'}">
-                    <button class="btn btn-danger btn-sm">삭제</button>
+                    <button class="btn btn-danger btn-sm" th:onclick="comment_delete_fn([[${comment.id}]])">삭제</button>
                 </div>
                 <hr>
             </div>
@@ -96,12 +96,12 @@
             if(commentList[i].commentWriter == commentWriter) {
                 result += "<div class=\"text-end\">";
                 result += "<button class=\"btn btn-secondary btn-sm\">수정</button>\n";
-                result += "<button class=\"btn btn-danger btn-sm\">삭제</button>";
+                result += "<button class=\"btn btn-danger btn-sm\" onclick=\"comment_delete_fn("+ commentList[i].id +")\">삭제</button>";
                 result += "</div>";
             }
             if(commentWriter == 'admin') {
                 result += "<div class=\"text-end\">";
-                result += "<button class=\"btn btn-danger btn-sm\">삭제</button>";
+                result += "<button class=\"btn btn-danger btn-sm\" onclick=\"comment_delete_fn("+ commentList[i].id +")\">삭제</button>";
                 result += "</div>";
             }
             result += "<hr>";
@@ -146,7 +146,7 @@
         console.log(`memberId:${memberId}, boardId:${boardId}, writer:${commentWriter}, contents:${commentContents}`);
         axios({
             method:"post",
-            url:"/comment/save",
+            url:"/comment",
             data:{
                 memberId:memberId,
                 boardId:boardId,
@@ -154,12 +154,28 @@
                 commentContents:commentContents
             }
         }).then(res => {
-            console.log(res);
+            document.querySelector("#commentContents").value = "";
             print_comment(res.data);
         }).catch(err => {
-            console.log(err);
-            location.reload();
-        })
+            alert("등록실패");
+        });
+    }
+    const comment_delete_fn = (commentId) => {
+        if(confirm("삭제하시겠습니까?")) {
+            axios({
+                method: "delete",
+                url: "/comment",
+                data: {
+                    id: commentId,
+                    boardId: boardId
+                }
+            }).then(res => {
+                alert("댓글이 삭제되었습니다.");
+                print_comment(res.data);
+            }).catch(err => {
+                alert("삭제실패")
+            });
+        }
     }
 </script>
 </html>

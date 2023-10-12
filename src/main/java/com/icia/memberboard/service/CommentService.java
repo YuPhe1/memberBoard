@@ -40,4 +40,8 @@ public class CommentService {
         });
         return commentDTOList;
     }
+
+    public void deleteById(Long id) {
+        commentRepository.deleteById(id);
+    }
 }
